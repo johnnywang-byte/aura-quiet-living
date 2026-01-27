@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: aura-backend
+  
+  # MySQL Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/aura_db?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=UTC
+    username: root
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  
+  # OpenAI Configuration
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.7
+          max-tokens: 1000
+      embedding:
+        options:
+          model: text-embedding-3-small
+    
+    # SimpleVectorStore Configuration
+    vectorstore:
+      simple:
+        file-path: ./data/vector-store.json
+        auto-save-interval: 60000
+
+# Server Configuration
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-stacktrace: on_param
+
+# CORS Configuration
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:3000
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  max-age: 3600
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.aura: DEBUG
+    org.springframework.ai: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Application Configuration
+app:
+  pdf:
+    manuals-path: classpath:manuals/
+  vector:
+    chunk-size: 500
+    chunk-overlap: 50
