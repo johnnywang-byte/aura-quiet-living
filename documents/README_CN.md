@@ -95,17 +95,21 @@ aura-quiet-living/
 │   │   └── manuals/           # 产品 PDF
 │   └── pom.xml
 │
-├── components/                # React 组件
-├── services/                  # API 服务
-├── types.ts                   # TypeScript 类型
+├── aura-frontend/             # React 前端
+│   ├── components/            # React 组件
+│   ├── services/              # API 服务
+│   └── types.ts               # TypeScript 类型
 │
-├── 团队分工详细方案.md         # 详细分工表 ⭐
-├── 团队分工与Git工作流.md      # Git 工作流
-├── 立项与可行性分析.md         # 立项文档
-├── 开发规范.md                # 中文开发规范
-├── DEVELOPMENT_STANDARDS.md   # 英文开发规范
-├── ARCHITECTURE.md            # 完整架构手册
-└── README.md                  # 本文件
+├── documents/                 # 所有文档（本文件所在目录）
+│   ├── 团队分工详细方案.md
+│   ├── 团队分工与Git工作流.md
+│   ├── 立项与可行性分析.md
+│   ├── 开发规范.md
+│   ├── DEVELOPMENT_STANDARDS.md
+│   ├── ARCHITECTURE.md
+│   └── README_CN.md          # 本文件 ⭐
+│
+└── README.md                  # 项目入口（英文）
 ```
 
 ---
@@ -130,12 +134,12 @@ aura-quiet-living/
 
 ## 📚 文档
 
-- **[团队分工详细方案.md](./documents/团队分工详细方案.md)** - 6 人团队详细分工 ⭐
-- **[团队分工与Git工作流.md](./documents/团队分工与Git工作流.md)** - Git 工作流和协作规范
-- **[立项与可行性分析.md](./documents/立项与可行性分析.md)** - 立项和可行性分析
-- **[开发规范.md](./documents/开发规范.md)** - 中文开发规范
-- **[DEVELOPMENT_STANDARDS.md](./documents/DEVELOPMENT_STANDARDS.md)** - 英文开发规范
-- **[ARCHITECTURE.md](./documents/ARCHITECTURE.md)** - 完整架构手册（100+ 页）
+- **[团队分工详细方案.md](./团队分工详细方案.md)** - 6 人团队详细分工 ⭐
+- **[团队分工与Git工作流.md](./团队分工与Git工作流.md)** - Git 工作流和协作规范
+- **[立项与可行性分析.md](./立项与可行性分析.md)** - 立项和可行性分析
+- **[开发规范.md](./开发规范.md)** - 中文开发规范
+- **[DEVELOPMENT_STANDARDS.md](./DEVELOPMENT_STANDARDS.md)** - 英文开发规范
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 完整架构手册（100+ 页）
 
 ---
 
@@ -276,4 +280,4 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 ## 🌐 English Version
 
-See [README.md](./README.md) for English documentation.
+See [README.md](../README.md) for English documentation.
