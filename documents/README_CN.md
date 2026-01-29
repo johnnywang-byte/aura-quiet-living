@@ -130,13 +130,12 @@ aura-quiet-living/
 
 ## 📚 文档
 
-- **[团队分工详细方案.md](./团队分工详细方案.md)** - 6 人团队详细分工 ⭐
-- **[中国区Git使用指南.md](./中国区Git使用指南.md)** - 中国区成员网络加速方案 ⭐
-- **[团队分工与Git工作流.md](./团队分工与Git工作流.md)** - Git 工作流和协作规范
-- **[立项与可行性分析.md](./立项与可行性分析.md)** - 立项和可行性分析
-- **[开发规范.md](./开发规范.md)** - 中文开发规范
-- **[DEVELOPMENT_STANDARDS.md](./DEVELOPMENT_STANDARDS.md)** - 英文开发规范
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 完整架构手册（100+ 页）
+- **[团队分工详细方案.md](./documents/团队分工详细方案.md)** - 6 人团队详细分工 ⭐
+- **[团队分工与Git工作流.md](./documents/团队分工与Git工作流.md)** - Git 工作流和协作规范
+- **[立项与可行性分析.md](./documents/立项与可行性分析.md)** - 立项和可行性分析
+- **[开发规范.md](./documents/开发规范.md)** - 中文开发规范
+- **[DEVELOPMENT_STANDARDS.md](./documents/DEVELOPMENT_STANDARDS.md)** - 英文开发规范
+- **[ARCHITECTURE.md](./documents/ARCHITECTURE.md)** - 完整架构手册（100+ 页）
 
 ---
 

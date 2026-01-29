@@ -84,25 +84,34 @@ aura-quiet-living/
 ├── aura-backend/              # Spring Boot backend
 │   ├── src/main/java/com/aura/
 │   │   ├── config/            # Configuration
-│   │   ├── controller/        # REST APIs
+│   │   ├── controller/        # REST API
 │   │   ├── service/           # Business logic
 │   │   ├── repository/        # Data access
 │   │   ├── model/             # Entities & DTOs
 │   │   └── ai/                # AI agents & functions
 │   ├── src/main/resources/
-│   │   ├── application.yml    # Configuration
+│   │   ├── application.yml    # Config file
 │   │   ├── data.sql           # Database init
 │   │   └── manuals/           # Product PDFs
 │   └── pom.xml
 │
-├── src/                       # React frontend
-│   ├── components/
-│   ├── services/
-│   └── types.ts
+├── aura-frontend/             # React frontend
+│   ├── components/            # React components
+│   ├── services/              # API services
+│   ├── types.ts               # TypeScript types
+│   ├── package.json
+│   └── vite.config.ts
 │
-├── ARCHITECTURE.md            # Complete architecture handbook
-├── DEVELOPMENT_STANDARDS.md  # Coding standards & Git workflow
-└── README.md                  # This file
+├── documents/                 # All documentation
+│   ├── ARCHITECTURE.md        # Architecture handbook
+│   ├── DEVELOPMENT_STANDARDS.md
+│   ├── 团队分工详细方案.md
+│   ├── 团队分工与Git工作流.md
+│   ├── 立项与可行性分析.md
+│   └── 开发规范.md
+│
+├── README.md                  # This file
+└── README_CN.md               # Chinese README
 ```
 
 ---
@@ -127,14 +136,15 @@ aura-quiet-living/
 
 ## 📚 Documentation
 
-- **[Team Assignment (Detailed)](./团队分工详细方案.md)** - Detailed 6-person team assignment ⭐
-- **[Team Assignment & Git Workflow](./团队分工与Git工作流.md)** - Git workflow and collaboration
-- **[Project Proposal](./立项与可行性分析.md)** - Project proposal and feasibility analysis (CN)
-- **[Development Standards (CN)](./开发规范.md)** - Chinese development standards
-- **[DEVELOPMENT_STANDARDS.md](./DEVELOPMENT_STANDARDS.md)** - English development standards
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete architecture handbook (100+ pages)
+- **[Team Assignment (Detailed)](./documents/团队分工详细方案.md)** - Detailed 6-person team assignment ⭐
+- **[Team Assignment & Git Workflow](./documents/团队分工与Git工作流.md)** - Git workflow and collaboration
+- **[Project Proposal](./documents/立项与可行性分析.md)** - Project proposal and feasibility analysis (CN)
+- **[Development Standards (CN)](./documents/开发规范.md)** - Chinese development standards
+- **[DEVELOPMENT_STANDARDS.md](./documents/DEVELOPMENT_STANDARDS.md)** - English development standards
+- **[ARCHITECTURE.md](./documents/ARCHITECTURE.md)** - Complete architecture handbook (100+ pages)
 - **[aura-backend/README.md](./aura-backend/README.md)** - Backend development guide
-- **[README_CN.md](./README_CN.md)** - 中文版 README
+- **[aura-frontend/README.md](./aura-frontend/README.md)** - Frontend development guide
+- **[README_CN.md](./documents/README_CN.md)** - 中文版 README
 
 ---
 
