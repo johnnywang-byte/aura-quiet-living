@@ -1,5 +1,6 @@
 package com.aura.ai.function;
 
+import com.aura.model.entity.Order;
 import com.aura.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Description;
@@ -22,7 +23,24 @@ public class GetOrderStatusFunction
     @Override
     public Response apply(Request request) {
         // TODO: Implement
-        return null;
+        Order order = orderService.getOrderByNumber(request.orderNumber());
+        if (order == null) {
+            return new Response(
+                    request.orderNumber(),
+                    "NOT_FOUND",
+                    null,
+                    ""
+            );
+        }
+        String estimated = order.getCreatedAt() != null
+                ? order.getCreatedAt().plusDays(5).toString()
+                : "";
+        return new Response(
+                order.getOrderNumber(),
+                order.getStatus() != null ? order.getStatus() : "UNKNOWN",
+                order.getTrackingNumber(),
+                estimated
+        );
     }
 
     public record Request(String orderNumber) {

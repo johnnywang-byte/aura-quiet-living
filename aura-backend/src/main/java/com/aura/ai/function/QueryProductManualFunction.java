@@ -21,7 +21,9 @@ public class QueryProductManualFunction
     @Override
     public Response apply(Request request) {
         // TODO: Implement
-        return null;
+        String answer = ragService.answerFromManual(request.question(), request.productId());
+        if (answer == null) answer = "暂无该产品说明书信息。";
+        return new Response(answer, "product_manual");
     }
 
     public record Request(String productId, String question) {

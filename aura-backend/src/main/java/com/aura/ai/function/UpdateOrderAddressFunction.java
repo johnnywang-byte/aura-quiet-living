@@ -1,5 +1,6 @@
 package com.aura.ai.function;
 
+import com.aura.model.entity.Order;
 import com.aura.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Description;
@@ -20,8 +21,11 @@ public class UpdateOrderAddressFunction
 
     @Override
     public Response apply(Request request) {
-        // TODO: Implement
-        return null;
+        Order updated = orderService.updateShippingAddress(request.orderNumber(), request.newAddress());
+        if (updated == null) {
+            return new Response(false, "订单不存在或更新失败");
+        }
+        return new Response(true, "配送地址已更新");
     }
 
     public record Request(String orderNumber, String newAddress) {
