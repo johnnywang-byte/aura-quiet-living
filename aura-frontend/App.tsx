@@ -14,6 +14,7 @@ import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
 import JournalDetail from './components/JournalDetail';
 import CartDrawer from './components/CartDrawer';
+import Assistant from './components/Assistant';
 import Checkout from './components/Checkout';
 import { Product, JournalArticle, ViewState } from './types';
 
@@ -21,6 +22,7 @@ function App() {
   const [view, setView] = useState<ViewState>({ type: 'home' });
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Handle navigation (clicks on Navbar or Footer links)
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
@@ -137,6 +139,11 @@ function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setView({ type: 'checkout' });
         }}
+      />
+
+      <Assistant
+        isOpen={isChatOpen}
+        onToggle={() => setIsChatOpen(!isChatOpen)}
       />
     </div>
   );

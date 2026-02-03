@@ -4,14 +4,12 @@
 */
 
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
+import { productApi } from '../services/api';
 
 const categories = ['All', 'Audio', 'Wearable', 'Mobile', 'Home'];
-
-// TODO: Fetch products from backend API
-const PRODUCTS: Product[] = [];
 
 interface ProductGridProps {
   onProductClick: (product: Product) => void;
@@ -19,11 +17,30 @@ interface ProductGridProps {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products from API on component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productApi.getAllProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
-    if (activeCategory === 'All') return PRODUCTS;
-    return PRODUCTS.filter(p => p.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === 'All') return products;
+    return products.filter(p => p.category === activeCategory);
+  }, [activeCategory, products]);
 
   return (
     <section id="products" className="py-32 px-6 md:px-12 bg-[#F5F2EB]">
@@ -40,8 +57,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`text-sm uppercase tracking-widest pb-1 border-b transition-all duration-300 ${activeCategory === cat
-                    ? 'border-[#2C2A26] text-[#2C2A26]'
-                    : 'border-transparent text-[#A8A29E] hover:text-[#2C2A26]'
+                  ? 'border-[#2C2A26] text-[#2C2A26]'
+                  : 'border-transparent text-[#A8A29E] hover:text-[#2C2A26]'
                   }`}
               >
                 {cat}
@@ -51,11 +68,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
         </div>
 
         {/* Large Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} onClick={onProductClick} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-32">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2C2A26]"></div>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-32 text-[#A8A29E]">
+            <p className="text-lg">No products found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} onClick={onProductClick} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
