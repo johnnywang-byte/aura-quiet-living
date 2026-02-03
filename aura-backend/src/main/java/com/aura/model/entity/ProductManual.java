@@ -5,13 +5,9 @@ import lombok.Data;
 
 /**
  * Product Manual Entity
- * Represents a chunk of product manual content for RAG system
  */
 @Entity
-@Table(name = "product_manuals", indexes = {
-        @Index(name = "IDX_PRODUCT_MANUAL_PRODUCT", columnList = "product_id"),
-        @Index(name = "IDX_PRODUCT_MANUAL_CHUNK", columnList = "product_id, chunk_index")
-})
+@Table(name = "product_manuals")
 @Data
 public class ProductManual {
 
@@ -30,10 +26,4 @@ public class ProductManual {
 
     @Column(name = "page_number")
     private Integer pageNumber;
-
-    @Column(name = "chunk_size")
-    private Integer chunkSize;
-
-    @Column(name = "manual_version", length = 20)
-    private String manualVersion;
 }
