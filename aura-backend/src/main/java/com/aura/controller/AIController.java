@@ -25,7 +25,12 @@ public class AIController {
     @PostMapping("/chat")
     public ApiResponse<ChatResponse> chat(@RequestBody ChatRequest request) {
         // TODO: Implement
-        return null;
+        try {
+            ChatResponse response = aiAgentService.processMessage(request);
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     /**
@@ -34,7 +39,12 @@ public class AIController {
     @GetMapping("/chat/history/{sessionId}")
     public ApiResponse<List<ChatResponse>> getChatHistory(@PathVariable String sessionId) {
         // TODO: Implement
-        return null;
+        try {
+            List<ChatResponse> list = aiAgentService.getChatHistory(sessionId);
+            return ApiResponse.success(list != null ? list : List.of());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     /**
@@ -43,6 +53,11 @@ public class AIController {
     @DeleteMapping("/chat/history/{sessionId}")
     public ApiResponse<Void> clearChatHistory(@PathVariable String sessionId) {
         // TODO: Implement
-        return null;
+        try {
+            aiAgentService.clearChatHistory(sessionId);
+            return ApiResponse.success(null, "已清空");
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 }
