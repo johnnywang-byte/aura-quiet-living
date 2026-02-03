@@ -1,5 +1,6 @@
 package com.aura.ai.function;
 
+import com.aura.model.entity.Product;
 import com.aura.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Description;
@@ -21,7 +22,13 @@ public class CheckInventoryFunction
     @Override
     public Response apply(Request request) {
         // TODO: Implement
-        return null;
+        Product product = productService.getProductById(request.productId());
+        if (product == null) {
+            return new Response(request.productId(), 0, false);
+        }
+        int stock = product.getStock() != null ? product.getStock() : 0;
+        return new Response(request.productId(), stock, stock > 0);
+
     }
 
     public record Request(String productId) {

@@ -1,5 +1,6 @@
 package com.aura.ai.function;
 
+import com.aura.model.entity.Product;
 import com.aura.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Description;
@@ -22,7 +23,24 @@ public class SearchProductsFunction
     @Override
     public Response apply(Request request) {
         // TODO: Implement
-        return null;
+        List<Product> list;
+        if (request.keyword() != null && !request.keyword().isBlank()) {
+            list = productService.searchProducts(request.keyword());
+        } else if (request.category() != null && !request.category().isBlank()) {
+            list = productService.getProductsByCategory(request.category());
+        } else {
+            list = productService.getAllProducts();
+        }
+        if (list == null) list = List.of();
+        List<ProductInfo> infos = list.stream()
+                .map(p -> new ProductInfo(
+                        p.getId(),
+                        p.getName(),
+                        p.getPrice().doubleValue(),
+                        p.getCategory()
+                ))
+                .toList();
+        return new Response(infos);
     }
 
     public record Request(String keyword, String category) {
