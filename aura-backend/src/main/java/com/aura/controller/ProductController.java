@@ -23,8 +23,12 @@ public class ProductController {
      */
     @GetMapping
     public ApiResponse<List<Product>> getAllProducts() {
-        // TODO: Implement
-        return null;
+        try {
+            List<Product> products = productService.getAllProducts();
+            return ApiResponse.success(products);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to get products: " + e.getMessage());
+        }
     }
 
     /**
@@ -32,8 +36,15 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public ApiResponse<Product> getProductById(@PathVariable String id) {
-        // TODO: Implement
-        return null;
+        try {
+            Product product = productService.getProductById(id);
+            if (product == null) {
+                return ApiResponse.error("Product not found");
+            }
+            return ApiResponse.success(product);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to get product: " + e.getMessage());
+        }
     }
 
     /**
@@ -41,8 +52,12 @@ public class ProductController {
      */
     @GetMapping("/category/{category}")
     public ApiResponse<List<Product>> getProductsByCategory(@PathVariable String category) {
-        // TODO: Implement
-        return null;
+        try {
+            List<Product> products = productService.getProductsByCategory(category);
+            return ApiResponse.success(products);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to get products by category: " + e.getMessage());
+        }
     }
 
     /**
@@ -50,7 +65,11 @@ public class ProductController {
      */
     @GetMapping("/search")
     public ApiResponse<List<Product>> searchProducts(@RequestParam String q) {
-        // TODO: Implement
-        return null;
+        try {
+            List<Product> products = productService.searchProducts(q);
+            return ApiResponse.success(products);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to search products: " + e.getMessage());
+        }
     }
 }

@@ -24,8 +24,12 @@ public class OrderController {
      */
     @PostMapping
     public ApiResponse<Order> createOrder(@RequestBody OrderRequest request) {
-        // TODO: Implement
-        return null;
+        try {
+            Order order = orderService.createOrder(request);
+            return ApiResponse.success(order, "Order created successfully");
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to create order: " + e.getMessage());
+        }
     }
 
     /**
@@ -33,8 +37,15 @@ public class OrderController {
      */
     @GetMapping("/{orderNumber}")
     public ApiResponse<Order> getOrder(@PathVariable String orderNumber) {
-        // TODO: Implement
-        return null;
+        try {
+            Order order = orderService.getOrderByNumber(orderNumber);
+            if (order == null) {
+                return ApiResponse.error("Order not found");
+            }
+            return ApiResponse.success(order);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to get order: " + e.getMessage());
+        }
     }
 
     /**
@@ -42,8 +53,12 @@ public class OrderController {
      */
     @GetMapping
     public ApiResponse<List<Order>> getAllOrders() {
-        // TODO: Implement
-        return null;
+        try {
+            List<Order> orders = orderService.getAllOrders();
+            return ApiResponse.success(orders);
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to get orders: " + e.getMessage());
+        }
     }
 
     /**
@@ -53,7 +68,14 @@ public class OrderController {
     public ApiResponse<Order> updateAddress(
             @PathVariable String orderNumber,
             @RequestBody String newAddress) {
-        // TODO: Implement
-        return null;
+        try {
+            Order order = orderService.updateShippingAddress(orderNumber, newAddress);
+            if (order == null) {
+                return ApiResponse.error("Order not found");
+            }
+            return ApiResponse.success(order, "Address updated successfully");
+        } catch (Exception e) {
+            return ApiResponse.error("Failed to update address: " + e.getMessage());
+        }
     }
 }
