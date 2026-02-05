@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
-
 /**
  * AI Agent Service
  * Main orchestrator for AI interactions
@@ -34,26 +33,37 @@ public class AIAgentService {
         String sessionId = request.getSessionId();
         String userMessage = request.getMessage();
 
+        // Validate input
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Session ID cannot be null or empty");
+        }
+        if (userMessage == null || userMessage.trim().isEmpty()) {
+            throw new IllegalArgumentException("Message cannot be null or empty");
+        }
+
         try {
-            // 1. Extract entities from user message
+            // 1. Analyze intent once (avoid duplicate API call)
+            String intent = orchestratorAgent.analyzeIntent(userMessage);
+            log.info("Analyzed intent: {}", intent);
+
+            // 2. Extract entities from user message
             var entities = memoryService.extractEntities(userMessage);
             log.info("Extracted entities: {}", entities);
 
-            // 2. Get recent conversation history for context
+            // 3. Get recent conversation history for context
             var recentHistory = memoryService.getRecentHistory(sessionId, 10);
             log.info("Retrieved recent history: {} messages", recentHistory.size());
 
-            // 3. Route to orchestrator agent for intent analysis and response generation
+            // 4. Route to orchestrator agent with cached intent
             String responseContent = orchestratorAgent.routeMessage(userMessage, sessionId);
 
-            // 4. Save user message to memory
+            // 5. Save user message to memory
             memoryService.saveMessage(sessionId, "user", userMessage, entities);
 
-            // 5. Save AI response to memory
+            // 6. Save AI response to memory (using cached intent, no duplicate API call)
             memoryService.saveMessage(sessionId, "assistant", responseContent, java.util.Map.of(
-                    "intent", orchestratorAgent.analyzeIntent(userMessage),
-                    "entities", entities
-            ));
+                    "intent", intent, // ✅ Use cached intent instead of calling again
+                    "entities", entities));
 
             // 6. Create and return ChatResponse
             ChatResponse response = new ChatResponse();
@@ -70,7 +80,8 @@ public class AIAgentService {
             // Create error response
             ChatResponse errorResponse = new ChatResponse();
             errorResponse.setSessionId(sessionId);
-            errorResponse.setMessage("I'm sorry, I encountered an error while processing your request. Please try again later.");
+            errorResponse.setMessage(
+                    "I'm sorry, I encountered an error while processing your request. Please try again later.");
             errorResponse.setTimestamp(java.time.LocalDateTime.now().toString());
 
             return errorResponse;

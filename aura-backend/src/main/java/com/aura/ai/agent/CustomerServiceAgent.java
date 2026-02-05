@@ -23,6 +23,12 @@ public class CustomerServiceAgent {
      * Handle order inquiry
      */
     public String handleOrderInquiry(String orderNumber) {
+        // Validate input
+        if (orderNumber == null || orderNumber.trim().isEmpty()) {
+            log.warn("Invalid order number provided: {}", orderNumber);
+            return "Please provide a valid order number.";
+        }
+
         log.info("Handling order inquiry for order number: {}", orderNumber);
 
         try {
@@ -31,7 +37,9 @@ public class CustomerServiceAgent {
 
             if (order == null) {
                 log.warn("Order not found: {}", orderNumber);
-                return String.format("I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.", orderNumber);
+                return String.format(
+                        "I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.",
+                        orderNumber);
             }
 
             log.info("Order found: {}, Status: {}", orderNumber, order.getStatus());
@@ -48,8 +56,7 @@ public class CustomerServiceAgent {
                     order.getStatus(),
                     order.getCreatedAt().toString(),
                     order.getTotalAmount(),
-                    order.getShippingAddress()
-            );
+                    order.getShippingAddress());
         } catch (Exception e) {
             log.error("Error handling order inquiry: {}", e.getMessage(), e);
             return "I'm sorry, I encountered an error while processing your request. Please try again later.";
@@ -60,6 +67,16 @@ public class CustomerServiceAgent {
      * Update order address
      */
     public String updateOrderAddress(String orderNumber, String newAddress) {
+        // Validate input
+        if (orderNumber == null || orderNumber.trim().isEmpty()) {
+            log.warn("Invalid order number for address update: {}", orderNumber);
+            return "Please provide a valid order number.";
+        }
+        if (newAddress == null || newAddress.trim().isEmpty()) {
+            log.warn("Invalid new address for order: {}", orderNumber);
+            return "Please provide a valid shipping address.";
+        }
+
         log.info("Updating address for order: {} to: {}", orderNumber, newAddress);
 
         try {
@@ -68,20 +85,25 @@ public class CustomerServiceAgent {
 
             if (order == null) {
                 log.warn("Order not found for address update: {}", orderNumber);
-                return String.format("I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.", orderNumber);
+                return String.format(
+                        "I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.",
+                        orderNumber);
             }
 
             // Check if order is in a status that allows address change
             if (!"PENDING".equals(order.getStatus()) && !"PROCESSING".equals(order.getStatus())) {
                 log.warn("Cannot update address for order in status: {}, Order: {}", order.getStatus(), orderNumber);
-                return String.format("I'm sorry, your order %s is currently in %s status, which doesn't allow address changes.", orderNumber, order.getStatus());
+                return String.format(
+                        "I'm sorry, your order %s is currently in %s status, which doesn't allow address changes.",
+                        orderNumber, order.getStatus());
             }
 
             // Update the address using OrderService
             Order updatedOrder = orderService.updateShippingAddress(orderNumber, newAddress);
             log.info("Address updated successfully for order: {}", orderNumber);
 
-            return String.format("Your order %s shipping address has been successfully updated to: %s", orderNumber, newAddress);
+            return String.format("Your order %s shipping address has been successfully updated to: %s", orderNumber,
+                    newAddress);
         } catch (Exception e) {
             log.error("Error updating order address: {}", e.getMessage(), e);
             return "I'm sorry, I encountered an error while updating your address. Please try again later.";
@@ -92,6 +114,16 @@ public class CustomerServiceAgent {
      * Handle return request
      */
     public String handleReturnRequest(String orderNumber, String reason) {
+        // Validate input
+        if (orderNumber == null || orderNumber.trim().isEmpty()) {
+            log.warn("Invalid order number for return request: {}", orderNumber);
+            return "Please provide a valid order number.";
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            log.warn("No return reason provided for order: {}", orderNumber);
+            return "Please provide a reason for the return.";
+        }
+
         log.info("Handling return request for order: {}, Reason: {}", orderNumber, reason);
 
         try {
@@ -100,13 +132,16 @@ public class CustomerServiceAgent {
 
             if (order == null) {
                 log.warn("Order not found for return request: {}", orderNumber);
-                return String.format("I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.", orderNumber);
+                return String.format(
+                        "I'm sorry, I couldn't find your order with number %s. Please check the order number and try again.",
+                        orderNumber);
             }
 
             // Check if order is eligible for return
             if (!"DELIVERED".equals(order.getStatus())) {
                 log.warn("Cannot process return for order in status: {}, Order: {}", order.getStatus(), orderNumber);
-                return String.format("I'm sorry, your order %s is currently in %s status, which doesn't allow returns.", orderNumber, order.getStatus());
+                return String.format("I'm sorry, your order %s is currently in %s status, which doesn't allow returns.",
+                        orderNumber, order.getStatus());
             }
 
             // Process return request
@@ -116,10 +151,10 @@ public class CustomerServiceAgent {
             return String.format(
                     "I've processed your return request for order %s.\n" +
                             "Return Reason: %s\n" +
-                            "Our customer service team will contact you within 1-2 business days to arrange the return.\n" +
+                            "Our customer service team will contact you within 1-2 business days to arrange the return.\n"
+                            +
                             "You'll receive a confirmation email shortly.",
-                    orderNumber, reason
-            );
+                    orderNumber, reason);
         } catch (Exception e) {
             log.error("Error handling return request: {}", e.getMessage(), e);
             return "I'm sorry, I encountered an error while processing your return request. Please try again later.";

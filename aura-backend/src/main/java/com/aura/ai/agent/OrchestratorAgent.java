@@ -30,28 +30,40 @@ public class OrchestratorAgent {
      * Intent classification prompt template
      */
     private static final String INTENT_PROMPT_TEMPLATE = """
-    Classify the user's message into one of the following intents:
-    
-    1. PRODUCT_INQUIRY: Questions about products, their features, prices, availability, or recommendations
-    2. ORDER_SERVICE: Questions about orders, shipping, returns, or customer service
-    3. GENERAL_CHAT: General conversation not related to products or orders
-    4. UNKNOWN: Cannot be classified into the above categories
-    
-    User message: {message}
-    
-    Return only the intent name (one of the four options above) without any additional explanation.
-    """;
+            Classify the user's message into one of the following intents:
+
+            1. PRODUCT_INQUIRY: Questions about products, their features, prices, availability, or recommendations
+            2. ORDER_SERVICE: Questions about orders, shipping, returns, or customer service
+            3. GENERAL_CHAT: General conversation not related to products or orders
+            4. UNKNOWN: Cannot be classified into the above categories
+
+            User message: {message}
+
+            Return only the intent name (one of the four options above) without any additional explanation.
+            """;
 
     /**
      * Analyze user intent
      */
     public String analyzeIntent(String message) {
+        // Validate input
+        if (message == null || message.trim().isEmpty()) {
+            log.warn("Empty message provided for intent analysis");
+            return "UNKNOWN";
+        }
+
         log.info("Analyzing intent for message: {}", message);
 
         try {
             // Create prompt template for intent classification
             String promptString = INTENT_PROMPT_TEMPLATE.replace("{message}", message);
             String intent = chatClient.prompt().user(promptString).call().content().trim();
+
+            // Validate intent result
+            if (intent == null || intent.isEmpty()) {
+                log.warn("Empty intent returned from ChatClient");
+                return "UNKNOWN";
+            }
 
             log.info("Classified intent: {}", intent);
             return intent;
@@ -114,8 +126,7 @@ public class OrchestratorAgent {
                     "Break down the following task into a sequence of simple, actionable steps. " +
                             "Each step should be clear, specific, and focused on a single action.\n\n" +
                             "Task: %s\n\nSteps:",
-                    task
-            );
+                    task);
 
             // Generate task plan using ChatClient
             String plan = chatClient.prompt()
@@ -125,7 +136,8 @@ public class OrchestratorAgent {
                     .trim();
             log.info("Generated task plan: {}", plan);
 
-            // In a real implementation, we would execute each step and coordinate between agents
+            // In a real implementation, we would execute each step and coordinate between
+            // agents
             // For demonstration, we'll return the plan
             return "I've created an action plan for your task:\n" + plan;
         } catch (Exception e) {
