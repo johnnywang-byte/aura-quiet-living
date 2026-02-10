@@ -144,10 +144,7 @@ aura-quiet-living/
 ├── .env.example               # Frontend environment template
 ├── .gitignore                 # Git ignore rules
 ├── LICENSE                    # MIT License
-├── CONTRIBUTING.md            # Contribution guide
-├── SECURITY.md                # Security policy
 ├── README.md                  # This file
-├── README_CN.md               # Chinese README
 └── SYSTEM_ARCHITECTURE_EN.md  # System architecture
 ```
 
