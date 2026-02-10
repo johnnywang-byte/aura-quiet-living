@@ -1,7 +1,8 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
+
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '../types';
@@ -13,14 +14,18 @@ interface AssistantProps {
 }
 
 const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
-    // Removed internal isOpen state to allow control from App.tsx/Navbar
     const [messages, setMessages] = useState<ChatMessage[]>([
         { role: 'model', text: 'Welcome to Aura. I am here to help you find objects that resonate with your life. How may I assist?', timestamp: Date.now() }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isThinking, setIsThinking] = useState(false);
     const [sessionId, setSessionId] = useState<string>('');
+    const [width, setWidth] = useState(540);
+    const [height, setHeight] = useState(700);
+    const [isResizing, setIsResizing] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const chatBoxRef = useRef<HTMLDivElement>(null);
+    const resizeStartRef = useRef<{ width: number; height: number; mouseX: number; mouseY: number; corner: string } | null>(null);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -28,23 +33,82 @@ const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
         }
     }, [messages, isOpen]);
 
+    // Handle resize
+    const handleResizeStart = (e: React.MouseEvent, corner: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsResizing(true);
+        resizeStartRef.current = {
+            width,
+            height,
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            corner
+        };
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing || !resizeStartRef.current) return;
+
+            const { width: startWidth, height: startHeight, mouseX, mouseY, corner } = resizeStartRef.current;
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
+
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+
+            // Calculate new dimensions based on which corner is being dragged
+            if (corner.includes('right')) {
+                newWidth = startWidth + deltaX;
+            } else if (corner.includes('left')) {
+                newWidth = startWidth - deltaX;
+            }
+
+            if (corner.includes('bottom')) {
+                newHeight = startHeight + deltaY;
+            } else if (corner.includes('top')) {
+                newHeight = startHeight - deltaY;
+            }
+
+            // Apply constraints
+            newWidth = Math.max(380, Math.min(newWidth, window.innerWidth * 0.9));
+            newHeight = Math.max(500, Math.min(newHeight, window.innerHeight * 0.85));
+
+            setWidth(newWidth);
+            setHeight(newHeight);
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+            resizeStartRef.current = null;
+        };
+
+        if (isResizing) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing, width, height]);
+
     const handleSend = async () => {
         if (!inputValue.trim()) return;
 
-        // Add user message immediately
         const userMsg: ChatMessage = { role: 'user', text: inputValue, timestamp: Date.now() };
         setMessages(prev => [...prev, userMsg]);
         setInputValue('');
         setIsThinking(true);
 
         try {
-            // Prepare request for backend
             const request: ChatRequest = {
                 message: userMsg.text,
                 sessionId: sessionId
             };
 
-            // Call Spring Boot Backend
             const response = await chatApi.sendMessage(request);
 
             if (response) {
@@ -87,10 +151,82 @@ const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
         }
     };
 
+    // Resize handle component
+    const ResizeHandle = ({ corner }: { corner: string }) => {
+        const position: React.CSSProperties = {};
+        let cursor = 'nwse-resize';
+
+        if (corner === 'bottom-right') {
+            position.bottom = 0;
+            position.right = 0;
+            cursor = 'nwse-resize';
+        } else if (corner === 'bottom-left') {
+            position.bottom = 0;
+            position.left = 0;
+            cursor = 'nesw-resize';
+        } else if (corner === 'top-right') {
+            position.top = 0;
+            position.right = 0;
+            cursor = 'nesw-resize';
+        } else if (corner === 'top-left') {
+            position.top = 0;
+            position.left = 0;
+            cursor = 'nwse-resize';
+        }
+
+        return (
+            <div
+                onMouseDown={(e) => handleResizeStart(e, corner)}
+                style={{
+                    position: 'absolute',
+                    width: '16px',
+                    height: '16px',
+                    cursor,
+                    zIndex: 10,
+                    ...position
+                }}
+                className="hover:bg-[#A8A29E]/20 transition-colors"
+            >
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    className="text-[#A8A29E]"
+                >
+                    {corner === 'bottom-right' && (
+                        <path d="M14 14L14 10M14 14L10 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    )}
+                    {corner === 'bottom-left' && (
+                        <path d="M2 14L2 10M2 14L6 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    )}
+                    {corner === 'top-right' && (
+                        <path d="M14 2L14 6M14 2L10 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    )}
+                    {corner === 'top-left' && (
+                        <path d="M2 2L2 6M2 2L6 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    )}
+                </svg>
+            </div>
+        );
+    };
+
     return (
         <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end font-sans">
             {isOpen && (
-                <div className="bg-[#F5F2EB] rounded-none shadow-2xl shadow-[#2C2A26]/10 w-[90vw] sm:w-[380px] h-[550px] mb-6 flex flex-col overflow-hidden border border-[#D6D1C7] animate-slide-up-fade">
+                <div
+                    ref={chatBoxRef}
+                    className="bg-[#F5F2EB] rounded-none shadow-2xl shadow-[#2C2A26]/10 mb-6 flex flex-col overflow-hidden border border-[#D6D1C7] animate-slide-up-fade relative"
+                    style={{
+                        width: window.innerWidth <= 640 ? '90vw' : `${width}px`,
+                        height: `${height}px`
+                    }}
+                >
+                    {/* Resize Handles */}
+                    <ResizeHandle corner="top-left" />
+                    <ResizeHandle corner="top-right" />
+                    <ResizeHandle corner="bottom-left" />
+                    <ResizeHandle corner="bottom-right" />
+
                     {/* Header */}
                     <div className="bg-[#EBE7DE] p-5 border-b border-[#D6D1C7] flex justify-between items-center">
                         <div className="flex items-center gap-3">
@@ -109,7 +245,7 @@ const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div
-                                    className={`max-w-[85%] p-5 text-sm leading-relaxed ${msg.role === 'user'
+                                    className={`max-w-[85%] p-5 text-base leading-relaxed ${msg.role === 'user'
                                         ? 'bg-[#2C2A26] text-[#F5F2EB]'
                                         : 'bg-white border border-[#EBE7DE] text-[#5D5A53] shadow-sm'
                                         }`}
@@ -138,7 +274,7 @@ const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={handleKeyPress}
                                 placeholder="Ask anything..."
-                                className="flex-1 bg-white border border-[#D6D1C7] focus:border-[#2C2A26] px-4 py-3 text-sm outline-none transition-colors placeholder-[#A8A29E] text-[#2C2A26]"
+                                className="flex-1 bg-white border border-[#D6D1C7] focus:border-[#2C2A26] px-4 py-3 text-base outline-none transition-colors placeholder-[#A8A29E] text-[#2C2A26]"
                             />
                             <button
                                 onClick={handleSend}
@@ -154,18 +290,51 @@ const Assistant: React.FC<AssistantProps> = ({ isOpen, onToggle }) => {
                 </div>
             )}
 
-            <button
-                onClick={onToggle}
-                className="bg-[#2C2A26] text-[#F5F2EB] w-14 h-14 flex items-center justify-center rounded-full shadow-xl hover:scale-105 transition-all duration-500 z-50"
-            >
-                {isOpen ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                ) : (
-                    <span className="font-serif italic text-lg">Ai</span>
-                )}
-            </button>
+            <div className="relative group">
+                {/* 背景智能光晕：模拟 AI 待命状态的能量场 */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#F5F2EB]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+
+                <button
+                    onClick={onToggle}
+                    className={`
+            relative z-10 flex items-center justify-center rounded-full shadow-2xl 
+            /* 尺寸调整：大尺寸圆形 */
+            w-24 h-24 
+            /* 背景与毛玻璃：增加材质感 */
+            bg-[#2C2A26]/90 backdrop-blur-md 
+            /* 文字颜色与边框 */
+            text-[#F5F2EB] border border-[#F5F2EB]/20 
+            /* 丝滑过渡：使用 duration-700 配合 cubic-bezier */
+            transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
+            /* 交互效果 */
+            hover:scale-110 hover:border-[#F5F2EB]/60 hover:shadow-[0_0_40px_rgba(245,242,235,0.2)]
+            active:scale-95
+        `}
+                    aria-label="Toggle AI Assistant"
+                >
+                    {/* 内部呼吸微光层 */}
+                    <div className="absolute inset-0 rounded-full bg-[#F5F2EB]/5 animate-pulse" />
+
+                    {isOpen ? (
+                        /* 关闭图标：降低描边粗细以显得更高端 */
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1}
+                            stroke="currentColor"
+                            className="w-10 h-10 relative z-20 opacity-90"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    ) : (
+                        /* "Ai" 文字：增加 tracking-widest 实现呼吸感 */
+                        <span className="relative z-20 font-serif italic text-3xl tracking-[0.1em] ml-1 opacity-95">
+                            Ai
+                        </span>
+                    )}
+                </button>
+            </div>
         </div>
     );
 };

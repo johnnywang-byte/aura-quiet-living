@@ -11,27 +11,42 @@ import org.springframework.stereotype.Service;
 
 /**
  * AI Agent Service
- * Main orchestrator for AI interactions
+ * AI服务入口
+ * 
+ * 职责：
+ * - 统一的业务编排层
+ * - 处理完整的对话流程
+ * - 保存对话历史
+ * - 调用 OrchestratorAgent 进行路由
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AIAgentService {
 
-    private final ChatClient chatClient;
-    private final RAGService ragService;
     private final MemoryService memoryService;
-    private final MultiAgentService multiAgentService;
     private final OrchestratorAgent orchestratorAgent;
 
     /**
      * Process chat message
+     * 处理聊天消息（统一入口）
+     * 
+     * 职责：
+     * 1. 验证输入
+     * 2. 提取实体
+     * 3. 保存用户消息
+     * 4. 路由到OrchestratorAgent
+     * 5. 保存AI响应
+     * 6. 返回响应
+     * 
+     * @param request Chat request
+     * @return Chat response
      */
     public ChatResponse processMessage(ChatRequest request) {
-        log.info("Processing message for session: {}", request.getSessionId());
-
         String sessionId = request.getSessionId();
         String userMessage = request.getMessage();
+
+        log.info("Processing message for session: {}", sessionId);
 
         // Validate input
         if (sessionId == null || sessionId.trim().isEmpty()) {
@@ -42,30 +57,25 @@ public class AIAgentService {
         }
 
         try {
-            // 1. Analyze intent once (avoid duplicate API call)
-            String intent = orchestratorAgent.analyzeIntent(userMessage);
-            log.info("Analyzed intent: {}", intent);
-
-            // 2. Extract entities from user message
+            // 1. Extract entities from user message
             var entities = memoryService.extractEntities(userMessage);
             log.info("Extracted entities: {}", entities);
 
-            // 3. Get recent conversation history for context
-            var recentHistory = memoryService.getRecentHistory(sessionId, 10);
-            log.info("Retrieved recent history: {} messages", recentHistory.size());
-
-            // 4. Route to orchestrator agent with cached intent
-            String responseContent = orchestratorAgent.routeMessage(userMessage, sessionId);
-
-            // 5. Save user message to memory
+            // 2. Save user message to memory (before processing)
             memoryService.saveMessage(sessionId, "user", userMessage, entities);
 
-            // 6. Save AI response to memory (using cached intent, no duplicate API call)
-            memoryService.saveMessage(sessionId, "assistant", responseContent, java.util.Map.of(
-                    "intent", intent, // ✅ Use cached intent instead of calling again
-                    "entities", entities));
+            // 3. Route to orchestrator agent
+            // OrchestratorAgent will:
+            // - Analyze intent
+            // - Route to appropriate specialized agent
+            // - Return response
+            String responseContent = orchestratorAgent.routeMessage(userMessage, sessionId);// ⚠️ ⚠️ ⚠️每条消息都调用OrchestratorAgent进行路由
 
-            // 6. Create and return ChatResponse
+            // 4. Save AI response to memory
+            memoryService.saveMessage(sessionId, "assistant", responseContent, 
+                    java.util.Map.of("entities", entities));
+
+            // 5. Create and return ChatResponse
             ChatResponse response = new ChatResponse();
             response.setSessionId(sessionId);
             response.setMessage(responseContent);
@@ -75,7 +85,7 @@ public class AIAgentService {
             return response;
 
         } catch (Exception e) {
-            log.error("Error processing message: {}", e.getMessage(), e);
+            log.error("Error processing message for session {}: {}", sessionId, e.getMessage(), e);
 
             // Create error response
             ChatResponse errorResponse = new ChatResponse();

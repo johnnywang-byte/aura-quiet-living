@@ -24,6 +24,17 @@
 9. ✅ **Error Handling** - Smart error recovery
 10. ✅ **Reflection** - Self-improvement
 
+### 🎨 Project Credits
+
+- **Frontend**: Base template from [Google AI Studio](https://aistudio.google.com/) - E-commerce UI foundation
+- **Backend**: Fully developed from scratch using:
+  - **Spring AI** - AI integration framework
+  - **SimpleVectorStore** - Vector storage for RAG
+  - **MySQL** - Relational database
+  - **OpenAI API** - LLM integration (gpt-4o-mini)
+  - Custom multi-agent architecture with 4 specialized agents
+  - 8 business functions with intelligent routing
+
 ---
 
 ## 🚀 Quick Start
@@ -93,6 +104,7 @@ aura-quiet-living/
 │   │   ├── application.yml    # Config file
 │   │   ├── data.sql           # Database init
 │   │   └── manuals/           # Product PDFs
+│   ├── .env.example           # Environment template
 │   └── pom.xml
 │
 ├── aura-frontend/             # React frontend
@@ -102,7 +114,7 @@ aura-quiet-living/
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── documents/                 # All documentation
+├── documents/                 # Project documentation
 │   ├── ARCHITECTURE.md        # Architecture handbook
 │   ├── DEVELOPMENT_STANDARDS.md
 │   ├── 团队分工详细方案.md
@@ -110,8 +122,33 @@ aura-quiet-living/
 │   ├── 立项与可行性分析.md
 │   └── 开发规范.md
 │
+├── QA-Ai Agent/               # AI Agent technical Q&A (7 docs, ~175KB)
+│   ├── MEMORY_SYSTEM.md       # ⭐ Memory system deep dive
+│   ├── AI_CALL_FLOW_COMPLETE_GUIDE.md  # Complete AI flow
+│   ├── FUNCTION_REGISTRATION_AND_AGENTS.md
+│   ├── PRODUCT_KEYWORD_EXTRACTION_IMPROVEMENT.md
+│   ├── PDF_CHUNKING_EXPLAINED.md
+│   ├── AI_TEST_QUESTIONS_COMPREHENSIVE.md
+│   ├── AI_ASSISTANT_TEST_GUIDE.md
+│   └── README.md              # QA documentation index
+│
+├── QA-General/                # General Q&A documentation
+│   ├── ORDER_MANAGEMENT_FIXES.md
+│   ├── CODE_DECOUPLING_COMPLETE.md
+│   └── README.md
+│
+├── .github/                   # GitHub templates
+│   ├── ISSUE_TEMPLATE/
+│   └── pull_request_template.md
+│
+├── .env.example               # Frontend environment template
+├── .gitignore                 # Git ignore rules
+├── LICENSE                    # MIT License
+├── CONTRIBUTING.md            # Contribution guide
+├── SECURITY.md                # Security policy
 ├── README.md                  # This file
-└── README_CN.md               # Chinese README
+├── README_CN.md               # Chinese README
+└── SYSTEM_ARCHITECTURE_EN.md  # System architecture
 ```
 
 ---
@@ -136,15 +173,16 @@ aura-quiet-living/
 
 ## 📚 Documentation
 
-- **[Team Assignment (Detailed)](./documents/团队分工详细方案.md)** - Detailed 6-person team assignment ⭐
-- **[Team Assignment & Git Workflow](./documents/团队分工与Git工作流.md)** - Git workflow and collaboration
-- **[Project Proposal](./documents/立项与可行性分析.md)** - Project proposal and feasibility analysis (CN)
-- **[Development Standards (CN)](./documents/开发规范.md)** - Chinese development standards
-- **[DEVELOPMENT_STANDARDS.md](./documents/DEVELOPMENT_STANDARDS.md)** - English development standards
+### 📖 Core Documentation
+- **[SYSTEM_ARCHITECTURE_EN.md](./SYSTEM_ARCHITECTURE_EN.md)** - Complete system architecture ⭐
 - **[ARCHITECTURE.md](./documents/ARCHITECTURE.md)** - Complete architecture handbook (100+ pages)
-- **[aura-backend/README.md](./aura-backend/README.md)** - Backend development guide
-- **[aura-frontend/README.md](./aura-frontend/README.md)** - Frontend development guide
-- **[README_CN.md](./documents/README_CN.md)** - 中文版 README
+
+### 🤖 AI Agent Technical Documentation
+- **[QA-Ai Agent/](./QA-Ai%20Agent/)** - 7 comprehensive technical guides (~175KB)
+  - **[MEMORY_SYSTEM.md](./QA-Ai%20Agent/MEMORY_SYSTEM.md)** - Three-layer memory architecture ⭐
+  - **[AI_CALL_FLOW_COMPLETE_GUIDE.md](./QA-Ai%20Agent/AI_CALL_FLOW_COMPLETE_GUIDE.md)** - Complete AI flow
+  - **[FUNCTION_REGISTRATION_AND_AGENTS.md](./QA-Ai%20Agent/FUNCTION_REGISTRATION_AND_AGENTS.md)** - Function & Agent details
+  - [More documentation...](./QA-Ai%20Agent/README.md)
 
 ---
 
@@ -269,10 +307,10 @@ MIT License - see [LICENSE](LICENSE) file
 ## 📞 Support
 
 For questions or issues:
-- Check [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Review [DEVELOPMENT_STANDARDS.md](./DEVELOPMENT_STANDARDS.md)
+- Check [SYSTEM_ARCHITECTURE_EN.md](./SYSTEM_ARCHITECTURE_EN.md) for architecture details
+- Review [QA-Ai Agent/](./QA-Ai%20Agent/) for AI technical questions
 - Open an issue on GitHub
 
 ---
 
-**Built with ❤️ by the Aura Team**
+**Built with ❤️ by the Johnny**

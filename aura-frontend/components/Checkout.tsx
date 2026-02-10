@@ -12,11 +12,13 @@ import { orderApi, OrderRequest } from '../services/api';
 interface CheckoutProps {
   items: Product[];
   onBack: () => void;
+  onOrderComplete?: () => void;  // Callback to clear cart after order
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
+const Checkout: React.FC<CheckoutProps> = ({ items, onBack, onOrderComplete }) => {
   const [formData, setFormData] = useState({
     email: '',
+    phone: '',
     firstName: '',
     lastName: '',
     address: '',
@@ -33,10 +35,31 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
   const total = subtotal + shipping;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target;
+    
+    // Always clear custom validity message when user types
+    // This ensures the validation state resets properly
+    target.setCustomValidity('');
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [target.name]: target.value,
     });
+  };
+
+  // Set custom validation messages in English
+  const handleInvalid = (e: React.InvalidEvent<HTMLInputElement>) => {
+    const target = e.target;
+    
+    if (target.validity.valueMissing) {
+      target.setCustomValidity('Please fill out this field.');
+    } else if (target.validity.typeMismatch) {
+      if (target.type === 'email') {
+        target.setCustomValidity('Please enter a valid email address.');
+      } else if (target.type === 'tel') {
+        target.setCustomValidity('Please enter a valid phone number.');
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,7 +76,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
       const orderRequest: OrderRequest = {
         customerName: `${formData.firstName} ${formData.lastName}`,
         customerEmail: formData.email,
-        customerPhone: '555-0000', // Mock phone number
+        customerPhone: formData.phone,
         shippingAddress: `${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city} ${formData.postalCode}`,
         items: items.map(item => ({
           productId: item.id,
@@ -66,6 +89,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
       if (response.success && response.data) {
         setOrderNumber(response.data.orderNumber);
         setOrderComplete(true);
+        // Clear cart after successful order
+        if (onOrderComplete) {
+          onOrderComplete();
+        }
       } else {
         alert('Order failed: ' + (response.message || 'Unknown error'));
       }
@@ -117,7 +144,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
               <h1 className="text-3xl font-serif text-[#2C2A26] mb-4">Checkout</h1>
               <p className="text-sm text-[#5D5A53] mb-12">Complete the form below to place your order.</p>
 
-              <div className="space-y-12">
+              <form onSubmit={handleSubmit} className="space-y-12">
                 {/* Section 1: Contact */}
                 <div>
                   <h2 className="text-xl font-serif text-[#2C2A26] mb-6">Contact Information</h2>
@@ -127,7 +154,18 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      onInvalid={handleInvalid}
                       placeholder="Email address"
+                      className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
+                      required
+                    />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      onInvalid={handleInvalid}
+                      placeholder="Phone number"
                       className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
                       required
                     />
@@ -148,6 +186,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        onInvalid={handleInvalid}
                         placeholder="First name"
                         className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
                         required
@@ -157,6 +196,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        onInvalid={handleInvalid}
                         placeholder="Last name"
                         className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
                         required
@@ -167,8 +207,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
+                      onInvalid={handleInvalid}
                       placeholder="Address"
-                      className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
+                      className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors autofill-fix"
                       required
                     />
                     <input
@@ -185,6 +226,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
+                        onInvalid={handleInvalid}
                         placeholder="City"
                         className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
                         required
@@ -194,6 +236,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
                         name="postalCode"
                         value={formData.postalCode}
                         onChange={handleInputChange}
+                        onInvalid={handleInvalid}
                         placeholder="Postal code"
                         className="w-full bg-transparent border-b border-[#D6D1C7] py-3 text-[#2C2A26] placeholder-[#A8A29E] outline-none focus:border-[#2C2A26] transition-colors"
                         required
@@ -217,14 +260,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack }) => {
 
                 <div>
                   <button
-                    onClick={handleSubmit}
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full py-5 bg-[#2C2A26] text-[#F5F2EB] uppercase tracking-widest text-sm font-medium hover:bg-[#433E38] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Processing...' : `Pay Now — $${total}`}
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
 
             {/* Right Column: Summary */}

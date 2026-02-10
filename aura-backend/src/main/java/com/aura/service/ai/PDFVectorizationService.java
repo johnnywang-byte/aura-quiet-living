@@ -1,6 +1,5 @@
 package com.aura.service.ai;
 
-import com.aura.repository.ProductManualRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -8,6 +7,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -24,7 +25,7 @@ import java.util.List;
 public class PDFVectorizationService {
 
     private final SimpleVectorStore vectorStore;
-    private final ProductManualRepository manualRepository;
+    private final ResourceLoader resourceLoader;
 
     @Value("${app.pdf.manuals-path:classpath:manuals/}")
     private String manualsPath;
@@ -50,9 +51,16 @@ public class PDFVectorizationService {
 
             log.info("Initializing vector store from PDF manuals...");
 
-            // Get manuals directory - handle both classpath and filesystem paths
-            String manualsDir = manualsPath.replace("classpath:", "src/main/resources/");
-            File directory = new File(manualsDir);
+            // Get manuals directory using ResourceLoader
+            File directory;
+            try {
+                Resource resource = resourceLoader.getResource(manualsPath);
+                directory = resource.getFile();
+            } catch (Exception e) {
+                log.error("Failed to resolve manuals path '{}': {}", manualsPath, e.getMessage());
+                log.info("Vector store initialized empty (no PDFs to process)");
+                return;
+            }
 
             if (!directory.exists() || !directory.isDirectory()) {
                 log.warn("Manuals directory does not exist: {}", directory.getAbsolutePath());

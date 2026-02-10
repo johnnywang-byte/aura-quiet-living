@@ -23,38 +23,47 @@ public class RAGService {
     private final ChatClient chatClient;
 
     /**
-     * Answer question from product manual using RAG
+     * Answer question using product manual RAG
      */
-    public String answerFromManual(String question, String productId) {
-        log.info("Answering question for product {}: {}", productId, question);
+    public String answerFromManual(String question, String sessionId) {
+        log.info("RAG query from session {}: {}", sessionId, question);
 
-        // Search for relevant documents
-        List<Document> relevantDocs = searchSimilar(question, 3);
+        // Search for relevant documents (increased topK for better recall)
+        List<Document> relevantDocs = searchSimilar(question, 8);
 
         if (relevantDocs.isEmpty()) {
             log.warn("No relevant documents found for question: {}", question);
-            return "抱歉，我在产品手册中没有找到相关信息。请尝试换个方式提问，或联系客服获取帮助。";
+            // Return empty string to let the calling agent handle the response
+            return "";
         }
 
         // Build context from retrieved documents
         StringBuilder context = new StringBuilder();
         for (int i = 0; i < relevantDocs.size(); i++) {
             Document doc = relevantDocs.get(i);
-            context.append("信息片段 ").append(i + 1).append(":\n");
+            context.append("Information Fragment ").append(i + 1).append(":\n");
             context.append(doc.getText()).append("\n\n");
+
+            // Debug: log retrieved content and score
+            log.debug("Document {}: score={}, text={}",
+                    i + 1,
+                    doc.getMetadata().get("distance"),
+                    doc.getText().substring(0, Math.min(100, doc.getText().length())));
         }
 
         // Create prompt for AI
-        String prompt = String.format("""
-                基于以下产品手册信息回答用户的问题。请用简洁、专业的语气回答。
+        String prompt = String.format(
+                """
+                        Based on the following product manual information, answer the user's question. Use a concise and professional tone.
 
-                产品手册信息：
-                %s
+                        Product Manual Information:
+                        %s
 
-                用户问题：%s
+                        User Question: %s
 
-                回答（请基于以上信息作答，如果信息不足以回答问题，请诚恳告知用户）：
-                """, context.toString(), question);
+                        Answer (based on the information above, if insufficient information is available, kindly inform the user):
+                        """,
+                context.toString(), question);
 
         // Generate answer using ChatClient
         String answer = chatClient.prompt()
@@ -76,7 +85,7 @@ public class RAGService {
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(query)
                 .topK(topK)
-                .similarityThreshold(0.7)
+                .similarityThreshold(0.4) // Lowered for diverse semantic matching
                 .build();
 
         // Execute vector search

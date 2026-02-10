@@ -21,7 +21,7 @@ public class VectorStoreConfig {
 
     @Bean
     public SimpleVectorStore vectorStore(EmbeddingModel embeddingModel) {
-        SimpleVectorStore vectorStore = new SimpleVectorStore(embeddingModel);
+        SimpleVectorStore vectorStore = SimpleVectorStore.builder(embeddingModel).build();
         File vectorStoreFile = new File(vectorStoreFilePath);
 
         // Create parent directory if it doesn't exist

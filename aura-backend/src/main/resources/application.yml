@@ -4,9 +4,9 @@ spring:
   
   # MySQL Configuration
   datasource:
-    url: jdbc:mysql://localhost:3306/aura_db?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/aura_db?useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -15,7 +15,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
   
   # OpenAI Configuration
@@ -29,7 +29,8 @@ spring:
           max-tokens: 1000
       embedding:
         options:
-          model: text-embedding-3-small
+          model: text-embedding-3-large
+          dimensions: 3072  # text-embedding-3-large supports up to 3072 dimensions
     
     # SimpleVectorStore Configuration
     vectorstore:
@@ -46,7 +47,7 @@ server:
 
 # CORS Configuration
 cors:
-  allowed-origins: http://localhost:5173,http://localhost:3000
+  allowed-origins: http://localhost:5173,http://localhost:3000,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:3001
   allowed-methods: GET,POST,PUT,DELETE,OPTIONS
   allowed-headers: "*"
   max-age: 3600
@@ -66,5 +67,5 @@ app:
   pdf:
     manuals-path: classpath:manuals/
   vector:
-    chunk-size: 500
-    chunk-overlap: 50
+    chunk-size: 800  # 增加分块大小以保留更多上下文
+    chunk-overlap: 100  # 增加重叠以提高连续性

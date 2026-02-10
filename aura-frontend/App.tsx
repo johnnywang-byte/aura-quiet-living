@@ -123,6 +123,7 @@ function App() {
           <Checkout
             items={cartItems}
             onBack={() => setView({ type: 'home' })}
+            onOrderComplete={() => setCartItems([])}
           />
         )}
       </main>

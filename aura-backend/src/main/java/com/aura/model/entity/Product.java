@@ -40,6 +40,10 @@ public class Product {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @Column(name = "features", columnDefinition = "JSON")
+    @Convert(converter = com.aura.util.JsonListConverter.class)
+    private java.util.List<String> features;
+
     @Column(columnDefinition = "INT DEFAULT 0")
     private Integer stock = 0;
 

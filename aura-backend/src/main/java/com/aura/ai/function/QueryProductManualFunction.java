@@ -20,9 +20,10 @@ public class QueryProductManualFunction
 
     @Override
     public Response apply(Request request) {
-        // TODO: Implement
+
         String answer = ragService.answerFromManual(request.question(), request.productId());
-        if (answer == null) answer = "暂无该产品说明书信息。";
+        if (answer == null)
+            answer = "There is currently no product manual available.";
         return new Response(answer, "product_manual");
     }
 

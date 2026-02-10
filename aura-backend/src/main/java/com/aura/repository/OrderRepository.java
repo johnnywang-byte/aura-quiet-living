@@ -23,7 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     java.util.List<Order> findByCustomerEmail(String email);
 
     /**
-     * Find orders by status
+     * Find orders by status 尚未实现此功能
      */
     java.util.List<Order> findByStatus(String status);
 }

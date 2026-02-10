@@ -1,0 +1,55 @@
+/* Custom CSS for Aura Application */
+
+/* Fix browser autofill styling - override blue background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #F5F2EB inset !important;
+  -webkit-text-fill-color: #2C2A26 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Chat Assistant Resize Styling */
+.resize {
+  resize: both;
+  overflow: auto;
+}
+
+/* Add a visible resize handle indicator */
+.resize::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, transparent 50%, #A8A29E 50%);
+  cursor: nwse-resize;
+  pointer-events: none;
+}
+
+/* Smooth transitions for chat messages */
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-fade {
+  animation: slide-up-fade 0.3s ease-out;
+}
+
+/* Bounce animation delays */
+.delay-75 {
+  animation-delay: 75ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
+}

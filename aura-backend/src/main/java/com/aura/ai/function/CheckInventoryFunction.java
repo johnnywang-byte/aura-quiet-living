@@ -21,7 +21,6 @@ public class CheckInventoryFunction
 
     @Override
     public Response apply(Request request) {
-        // TODO: Implement
         Product product = productService.getProductById(request.productId());
         if (product == null) {
             return new Response(request.productId(), 0, false);

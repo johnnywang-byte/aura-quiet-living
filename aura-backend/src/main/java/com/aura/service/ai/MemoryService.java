@@ -49,7 +49,8 @@ public class MemoryService {
 
         // 2. Save to short-term memory (in-memory)
         shortTermMemory.compute(sessionId, (key, existingHistory) -> {
-            List<ChatHistory> updatedHistory = existingHistory != null ? new ArrayList<>(existingHistory) : new ArrayList<>();
+            List<ChatHistory> updatedHistory = existingHistory != null ? new ArrayList<>(existingHistory)
+                    : new ArrayList<>();
             updatedHistory.add(finalChatHistory);
             // Keep short-term memory limited to 50 messages per session
             if (updatedHistory.size() > 50) {
@@ -64,8 +65,7 @@ public class MemoryService {
             Map<String, Object> metadata = Map.of(
                     "sessionId", sessionId,
                     "role", role,
-                    "timestamp", chatHistory.getCreatedAt().toString()
-            );
+                    "timestamp", chatHistory.getCreatedAt().toString());
 
             // Create document using constructor
             Document document = new Document(chatHistory.getMessage(), metadata);
@@ -159,8 +159,8 @@ public class MemoryService {
 
         // Simple regex-based entity extraction
 
-        // Extract order numbers (pattern: ORD-YYYYMMDD-XXXX)
-        Pattern orderPattern = Pattern.compile("ORD-\\d{8}-\\d{4}");
+        // Extract order numbers (pattern: ORD-yyyyMMddHHmmss-XXXX)
+        Pattern orderPattern = Pattern.compile("ORD-\\d{14}-\\d{4}");
         Matcher orderMatcher = orderPattern.matcher(message);
         List<String> orderNumbers = new ArrayList<>();
         while (orderMatcher.find()) {
