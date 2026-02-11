@@ -24,6 +24,14 @@
 9. ✅ **Error Handling** - Smart error recovery
 10. ✅ **Reflection** - Self-improvement
 
+## 🎬 Live Demo
+
+### 🛒 Shopping - Order Creation
+![mnggiflab-compressed-aura_shopping](https://github.com/user-attachments/assets/4bd38d09-3aa4-4112-b120-93f22c0aabd1)
+
+### 🤖 AI Assistant - Real-time Conversation
+![mnggiflab-compressed-mnggiflab-compressed-aura_ai](https://github.com/user-attachments/assets/5fa450cb-79fe-4a9e-9561-836db6787690)
+
 ### 🎨 Project Credits
 
 - **Frontend**: Base template from [Google AI Studio](https://aistudio.google.com/) - E-commerce UI foundation
@@ -238,17 +246,10 @@ See [ARCHITECTURE.md - Section 9](./ARCHITECTURE.md#9-演示脚本) for detailed
 
 **Quick Examples:**
 
-1. **RAG**: "Aura Harmony 的蓝牙传输距离是多少？"
-2. **Memory**: "我收到的这个颜色不对" (after mentioning an order)
-3. **Function Calling**: "帮我看看订单状态"
-4. **Complex Task**: "把订单送到新地址 XXX"
-
----
-
-## 👥 Team
-
-- **6 people**, **8-9 days**
-- See [ARCHITECTURE.md - Section 8](./ARCHITECTURE.md#8-开发计划) for team division
+1. **RAG**: "What is the Bluetooth range of the Aura Harmony?"
+2. **Memory**: "The color I received is incorrect" (after mentioning an order)
+3. **Function Calling**: "Please check my order status."
+4. **Complex Task**: "Send the order to the new address XXX."
 
 ---
 
