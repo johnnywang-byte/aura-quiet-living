@@ -122,14 +122,6 @@ aura-quiet-living/
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── documents/                 # Project documentation
-│   ├── ARCHITECTURE.md        # Architecture handbook
-│   ├── DEVELOPMENT_STANDARDS.md
-│   ├── 团队分工详细方案.md
-│   ├── 团队分工与Git工作流.md
-│   ├── 立项与可行性分析.md
-│   └── 开发规范.md
-│
 ├── QA-Ai Agent/               # AI Agent technical Q&A (7 docs, ~175KB)
 │   ├── MEMORY_SYSTEM.md       # ⭐ Memory system deep dive
 │   ├── AI_CALL_FLOW_COMPLETE_GUIDE.md  # Complete AI flow
